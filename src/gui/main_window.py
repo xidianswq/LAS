@@ -9,12 +9,14 @@ from tkinter import ttk, messagebox
 from datetime import datetime, date
 import sys
 import os
+import re
 
 # 添加项目根目录到路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from src.utils.database import execute_query, execute_update
-from src.utils.level_utils import format_level_info
+from src.utils.data_manager import format_level_info, format_level_only, calculate_level
+
 from src.utils.config import UI_CONFIG
 
 
@@ -283,21 +285,20 @@ class MainWindowGUI:
             
             if result:
                 current_exp = result[0]['experience'] or 0
-                level_info = format_level_info(current_exp)
+                # 计算当前等级
+                current_level = calculate_level(current_exp, 100)
+                level_info = format_level_only(current_level)
                 
                 # 更新等级显示
-                self.level_label.config(text=f"等级: {level_info['level']}")
-                
-                # 更新进度条
-                if hasattr(self, 'level_progress'):
-                    self.level_progress['value'] = level_info['progress_percent']
+                self.level_label.config(text=level_info)
+
             else:
                 # 如果没有找到用户信息，使用默认值
-                level_info = format_level_info(0)
-                self.level_label.config(text=f"等级: {level_info['level']}")
+                level_info = format_level_only(1)
+                self.level_label.config(text=level_info)
             
         except Exception as e:
             print(f"加载用户等级信息失败: {e}")
             # 使用默认值
-            level_info = format_level_info(0)
-            self.level_label.config(text=f"等级: {level_info['level']}") 
+            level_info = format_level_only(1)
+            self.level_label.config(text=level_info) 

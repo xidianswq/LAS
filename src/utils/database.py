@@ -7,7 +7,9 @@
 
 import sqlite3
 import os
-from datetime import datetime
+import threading
+import time
+from datetime import datetime, date
 from src.utils.config import DATABASE_NAME, DATABASE_TABLES
 
 class DatabaseManager:
@@ -177,3 +179,94 @@ def execute_insert(query, params=None):
     """执行插入语句"""
     db_manager = get_database_manager()
     return db_manager.execute_insert(query, params)
+
+
+class DailyResetManager:
+    """每日重置管理器"""
+    
+    def __init__(self, main_system):
+        self.main_system = main_system
+        self.reset_thread = None
+        self.stop_flag = False
+        
+    def start_daily_reset(self):
+        """启动每日重置线程"""
+        if self.reset_thread is None or not self.reset_thread.is_alive():
+            self.stop_flag = False
+            self.reset_thread = threading.Thread(target=self._daily_reset_loop, daemon=True)
+            self.reset_thread.start()
+            print("🔄 每日重置管理器已启动")
+    
+    def stop_daily_reset(self):
+        """停止每日重置线程"""
+        self.stop_flag = True
+        if self.reset_thread and self.reset_thread.is_alive():
+            self.reset_thread.join(timeout=1)
+    
+    def _daily_reset_loop(self):
+        """每日重置循环"""
+        while not self.stop_flag:
+            try:
+                current_time = datetime.now()
+                
+                # 检查是否到了重置时间（每天0点）
+                if current_time.hour == 0 and current_time.minute == 0:
+                    self._perform_daily_reset()
+                    # 等待1分钟，避免重复执行
+                    time.sleep(60)
+                else:
+                    # 每分钟检查一次
+                    time.sleep(60)
+                    
+            except Exception as e:
+                print(f"每日重置循环出错: {e}")
+                time.sleep(60)
+    
+    def _perform_daily_reset(self):
+        """执行每日重置"""
+        try:
+            print("🔄 开始执行每日重置...")
+            
+            # 重置每日任务状态
+            self._reset_daily_tasks()
+            
+            print("✅ 每日重置完成")
+            
+        except Exception as e:
+            print(f"❌ 每日重置失败: {e}")
+    
+    def _reset_daily_tasks(self):
+        """重置每日任务状态"""
+        try:
+            # 将未完成的每日任务状态重置为未完成
+            query = """
+                UPDATE daily_tasks 
+                SET status = '未完成', updated_at = ?
+                WHERE status != '已完成' AND task_date < ?
+            """
+            
+            current_date = datetime.now().strftime("%Y-%m-%d")
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            success = execute_update(query, (current_time, current_date))
+            
+            if success:
+                print("✅ 每日任务状态重置完成")
+                # 通知数据变更
+                self.main_system.notify_data_changed("daily_reset")
+            else:
+                print("❌ 每日任务状态重置失败")
+                
+        except Exception as e:
+            print(f"重置每日任务失败: {e}")
+
+
+def init_daily_reset_manager(main_system):
+    """初始化每日重置管理器"""
+    try:
+        reset_manager = DailyResetManager(main_system)
+        reset_manager.start_daily_reset()
+        return reset_manager
+    except Exception as e:
+        print(f"初始化每日重置管理器失败: {e}")
+        return None

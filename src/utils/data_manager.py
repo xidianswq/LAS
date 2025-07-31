@@ -14,8 +14,31 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from src.utils.database import execute_query, execute_update, execute_insert
-from src.utils.level_utils import format_level_info
-from src.utils.config import EXP_REWARD_CONFIG, MESSAGE_CONFIG
+from src.utils.config import EXP_REWARD_CONFIG, MESSAGE_CONFIG, LEVEL_SYSTEM_CONFIG
+
+
+def format_level_info(level, exp, exp_per_level):
+    """格式化等级信息"""
+    exp_for_next = calculate_exp_for_next_level(level, exp, exp_per_level)
+    progress = (exp % exp_per_level) / exp_per_level * 100
+    
+    return f"等级 {level} | 经验值 {exp}/{exp + exp_for_next} | 进度 {progress:.1f}%"
+
+
+def format_level_only(level):
+    """只格式化等级信息"""
+    return f"{level}"
+
+
+def calculate_level(exp, exp_per_level):
+    """计算等级"""
+    return (exp // exp_per_level) + 1
+
+
+def calculate_exp_for_next_level(level, exp, exp_per_level):
+    """计算升级所需经验值"""
+    exp_for_current_level = (level - 1) * exp_per_level
+    return exp_per_level - (exp - exp_for_current_level)
 
 
 class DataManager:
@@ -209,8 +232,8 @@ class DataManager:
                 new_exp = current_exp + exp_gain
                 
                 # 计算新的等级
-                from src.utils.level_utils import calculate_level
-                new_level = calculate_level(new_exp)
+                
+                new_level = calculate_level(new_exp, LEVEL_SYSTEM_CONFIG["exp_per_level"])
                 
                 # 更新经验值和等级
                 update_query = "UPDATE basic_info SET experience = ?, level = ? WHERE id = 1"
@@ -326,10 +349,13 @@ class DataManager:
             if result:
                 experience = result[0]['experience'] or 0
                 
-                # 使用等级计算工具获取正确的等级信息
-                level_info = format_level_info(experience)
+                # 计算当前等级
+                current_level = calculate_level(experience, LEVEL_SYSTEM_CONFIG["exp_per_level"])
                 
-                return f"当前等级: {level_info['level']}\n当前经验: {level_info['experience']}\n"
+                # 使用等级计算工具获取正确的等级信息
+                level_info = format_level_info(current_level, experience, LEVEL_SYSTEM_CONFIG["exp_per_level"])
+                
+                return f"当前等级: {current_level}\n当前经验: {experience}\n"
             else:
                 return "未找到用户等级信息"
                 

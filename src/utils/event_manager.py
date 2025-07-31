@@ -54,4 +54,58 @@ class EventManager:
             except Exception as e:
                 print(f"通知窗口失败: {e}")
                 # 如果窗口已关闭，从列表中移除
-                self.windows.remove(window) 
+                self.windows.remove(window)
+
+
+class EventHandlers:
+    """事件处理器"""
+    
+    def __init__(self, main_system):
+        self.main_system = main_system
+    
+    def on_data_changed(self, event_type="data_changed"):
+        """处理数据变更事件"""
+        print(f"🏠 主窗口收到数据变更通知: {event_type}")
+        
+        # 根据事件类型刷新相应的数据
+        if event_type in ["goal_added", "goal_changed", "goal_deleted", "goal_edited", "data_changed"]:
+            # 刷新目标列表
+            self.main_system.data_manager.refresh_goals()
+            print("✅ 主窗口目标列表已刷新")
+        
+        if event_type in ["daily_task_added", "daily_task_changed", "daily_task_deleted", "daily_task_edited", "data_changed"]:
+            # 刷新每日任务列表
+            self.main_system.data_manager.refresh_daily_tasks()
+            print("✅ 主窗口每日任务列表已刷新")
+        
+        # 刷新统计信息
+        self.main_system.data_manager.refresh_stats_display()
+        print("✅ 主窗口统计信息已刷新")
+    
+    def on_goal_type_changed(self):
+        """目标类型选择改变时的处理"""
+        self.main_system.data_manager.refresh_goals()
+    
+    def on_goal_double_click(self, event):
+        """目标双击事件处理"""
+        item = self.main_system.gui.goals_tree.selection()
+        if not item:
+            return
+        
+        # 获取目标ID
+        goal_id = self.main_system.gui.goals_tree.item(item[0], "tags")[0]
+        
+        # 切换完成状态
+        self.main_system.data_manager.toggle_goal_completion(goal_id)
+    
+    def on_daily_task_double_click(self, event):
+        """计划双击事件处理"""
+        item = self.main_system.gui.daily_tasks_tree.selection()
+        if not item:
+            return
+            
+        # 获取计划ID
+        task_id = self.main_system.gui.daily_tasks_tree.item(item[0], "tags")[0]
+        
+        # 切换完成状态
+        self.main_system.data_manager.toggle_daily_task_completion(task_id) 
