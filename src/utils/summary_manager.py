@@ -175,3 +175,17 @@ class SummaryManager:
         except Exception as e:
             print(f"获取总结统计失败: {e}")
             return f"获取总结统计失败: {e}"
+    
+    def clear_summary_form(self):
+        """清空总结表单"""
+        try:
+            # 清空日期输入
+            if hasattr(self.main_system, 'gui') and hasattr(self.main_system.gui, 'summary_date_var'):
+                self.main_system.gui.summary_date_var.set(self.main_system.get_current_date_str())
+            
+            # 清空内容输入
+            if hasattr(self.main_system, 'gui') and hasattr(self.main_system.gui, 'summary_content_text'):
+                self.main_system.gui.summary_content_text.delete(1.0, tk.END)
+                
+        except Exception as e:
+            print(f"清空总结表单失败: {e}")

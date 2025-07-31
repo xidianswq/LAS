@@ -99,7 +99,7 @@ class LASSystem:
     def init_daily_reset(self):
         """初始化每日重置管理器"""
         try:
-            init_daily_reset_manager()
+            init_daily_reset_manager(self)
             print("✅ 每日重置管理器初始化成功")
         except Exception as e:
             print(f"❌ 每日重置管理器初始化失败: {e}")
