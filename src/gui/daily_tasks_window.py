@@ -86,15 +86,13 @@ class DailyTasksWindow:
         desc_entry = ttk.Entry(desc_frame, textvariable=self.description_var, width=30)
         desc_entry.pack(side=tk.LEFT, padx=(5, 0))
         
-        # 优先级和经验值奖励在同一行
+        # 优先级
         priority_exp_frame = ttk.Frame(left_fields)
         priority_exp_frame.pack(fill=tk.X, pady=(0, 5))
-        
-        # 优先级
         ttk.Label(priority_exp_frame, text="优先级:").pack(side=tk.LEFT)
         self.priority_var = tk.StringVar(value="中")
         priority_combo = ttk.Combobox(priority_exp_frame, textvariable=self.priority_var, 
-                                     values=["高", "中", "低"], state="readonly", width=8)
+                                     values=["高", "中", "低"], state="readonly", width=26)
         priority_combo.pack(side=tk.LEFT, padx=(5, 10))
 
         
@@ -148,9 +146,6 @@ class DailyTasksWindow:
         # 右侧：操作按钮区域 - 竖向排列
         button_frame = ttk.Frame(list_button_frame)
         button_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(5, 0))
-        
-        # 按钮标题
-        ttk.Label(button_frame, text="操作", font=("Arial", 10, "bold")).pack(pady=(0, 5))
         
         # 竖向排列的按钮
         ttk.Button(button_frame, text="编辑任务", command=self.edit_selected_task, width=12).pack(fill=tk.X, pady=(0, 3))
@@ -428,23 +423,23 @@ class EditDailyTaskWindow:
         
         # 任务信息输入
         ttk.Label(form_frame, text="标题:").grid(row=0, column=0, sticky=tk.W, pady=3)
-        self.title_entry = ttk.Entry(form_frame, width=35)
+        self.title_entry = ttk.Entry(form_frame, width=30)
         self.title_entry.grid(row=0, column=1, pady=3, padx=(8, 0))
         
         ttk.Label(form_frame, text="描述:").grid(row=1, column=0, sticky=tk.W, pady=3)
-        self.description_entry = ttk.Entry(form_frame, width=35)
+        self.description_entry = ttk.Entry(form_frame, width=30)
         self.description_entry.grid(row=1, column=1, pady=3, padx=(8, 0))
         
         ttk.Label(form_frame, text="优先级:").grid(row=3, column=0, sticky=tk.W, pady=3)
         self.priority_var = tk.StringVar(value="中")
         priority_combo = ttk.Combobox(form_frame, textvariable=self.priority_var, 
-                                     values=["高", "中", "低"], width=32)
+                                     values=["高", "中", "低"], width=27)
         priority_combo.grid(row=3, column=1, pady=3, padx=(8, 0))
 
         ttk.Label(form_frame, text="状态:").grid(row=2, column=0, sticky=tk.W, pady=3)
         self.status_var = tk.StringVar(value="未完成")
         status_combo = ttk.Combobox(form_frame, textvariable=self.status_var, 
-                                   values=["未完成", "已完成"], width=32)
+                                   values=["未完成", "已完成"], width=27)
         status_combo.grid(row=2, column=1, pady=3, padx=(8, 0))
         
         # 按钮

@@ -189,10 +189,7 @@ class LASSystem:
         """获取当前日期字符串"""
         return datetime.now().strftime("%Y.%m.%d")
     
-    def on_summary_type_change(self):
-        """总结类型改变时的处理"""
-        # 由于移除了标题输入，此方法暂时保留以保持界面一致性
-        pass
+
     
     def save_summary(self):
         """保存总结"""
@@ -225,9 +222,8 @@ class LASSystem:
                 messagebox.showerror("错误", "日期格式不正确，请使用 YYYY.MM.DD 格式")
                 return
             
-            # 保存总结（使用默认类型"日总结"）
-            summary_type = "日总结"
-            success = self.summary_manager.save_summary(summary_type, content, formatted_date)
+            # 保存总结
+            success = self.summary_manager.save_summary(content, formatted_date)
             
             if success:
                 # 清空表单

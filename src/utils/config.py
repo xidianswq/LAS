@@ -88,8 +88,6 @@ DAILY_TASK_CONFIG = {
 
 # ==================== 总结配置 ====================
 SUMMARY_CONFIG = {
-    "summary_types": ["日总结", "周总结", "月总结"],
-    "default_type": "日总结",
     "auto_save": True,
     "max_content_length": 10000  # 最大内容长度
 }
@@ -100,7 +98,7 @@ UI_CONFIG = {
     "sidebar_width": 200,
     "tree_height": 200,
     "text_height": 150,
-    "refresh_interval": 3600,  # 24小时刷新间隔（毫秒）
+    "refresh_interval": 1000,  # 24小时刷新间隔（毫秒）
     "time_format": "%Y.%m.%d %H:%M:%S",
     "date_format": "%Y-%m-%d"
 }
@@ -143,16 +141,7 @@ DATABASE_TABLES = {
             updated_at TEXT
         )
     ''',
-    "summaries": '''
-        CREATE TABLE IF NOT EXISTS summaries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            summary_type TEXT,
-            content TEXT,
-            summary_date TEXT,
-            created_at TEXT,
-            updated_at TEXT
-        )
-    '''
+
 }
 
 # ==================== 默认数据配置 ====================

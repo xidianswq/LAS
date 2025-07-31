@@ -329,7 +329,7 @@ class DataManager:
                 # 使用等级计算工具获取正确的等级信息
                 level_info = format_level_info(experience)
                 
-                return f"当前等级: {level_info['level']}\n当前经验: {level_info['experience']}\n距离下一级还需: {level_info['exp_to_next']}经验\n等级进度: {level_info['progress_percent']:.1f}%"
+                return f"当前等级: {level_info['level']}\n当前经验: {level_info['experience']}\n"
             else:
                 return "未找到用户等级信息"
                 

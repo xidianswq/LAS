@@ -50,18 +50,14 @@ def write_summary_to_file(file_path: str, content: str, title: str = "", date: s
     # 构建新内容
     new_entry = ""
     if date:
-        new_entry += f"## {date}\n\n"
-    if title:
-        new_entry += f"### {title}\n\n"
-    new_entry += f"{content}\n\n"
+        new_entry += f"{date}\n"
+    new_entry += f"{content}\n"
+    new_entry += '\n\n\n'
     
     # 写入文件：新内容在开头，现有内容在后面，确保结尾有空行
     try:
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(new_entry + existing_content)
-            # 确保文件结尾有空行
-            if not existing_content.endswith('\n'):
-                f.write('\n')
     except Exception as e:
         print(f"写入文件失败: {e}")
 

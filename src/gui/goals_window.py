@@ -82,7 +82,7 @@ class GoalsWindow:
         
         ttk.Label(type_frame, text="类型:").pack(side=tk.LEFT)
         self.type_var = tk.StringVar(value=GOAL_CONFIG["goal_types"][0])
-        self.type_combo = ttk.Combobox(type_frame, textvariable=self.type_var, values=GOAL_CONFIG["goal_types"], state="readonly", width=15)
+        self.type_combo = ttk.Combobox(type_frame, textvariable=self.type_var, values=GOAL_CONFIG["goal_types"], state="readonly", width=27)
         self.type_combo.pack(side=tk.LEFT, padx=(5, 0))
         
         # 描述
@@ -101,13 +101,13 @@ class GoalsWindow:
         # 优先级
         ttk.Label(priority_deadline_frame, text="优先级:").pack(side=tk.LEFT)
         self.priority_var = tk.StringVar(value=GOAL_CONFIG["priority_levels"][1])  # 默认中等
-        priority_combo = ttk.Combobox(priority_deadline_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], state="readonly", width=8)
+        priority_combo = ttk.Combobox(priority_deadline_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], state="readonly", width=2)
         priority_combo.pack(side=tk.LEFT, padx=(5, 10))
         
         # 截止日期
         ttk.Label(priority_deadline_frame, text="截止日期:").pack(side=tk.LEFT)
         self.deadline_var = tk.StringVar()
-        deadline_entry = ttk.Entry(priority_deadline_frame, textvariable=self.deadline_var, width=12)
+        deadline_entry = ttk.Entry(priority_deadline_frame, textvariable=self.deadline_var, width=14)
         deadline_entry.pack(side=tk.LEFT, padx=(5, 0))
         
         # 右侧：按钮
@@ -432,30 +432,30 @@ class EditGoalWindow:
         
         # 目标信息输入
         ttk.Label(form_frame, text="标题:").grid(row=0, column=0, sticky=tk.W, pady=3)
-        self.title_entry = ttk.Entry(form_frame, width=35)
+        self.title_entry = ttk.Entry(form_frame, width=30)
         self.title_entry.grid(row=0, column=1, pady=3, padx=(8, 0))
         
         ttk.Label(form_frame, text="类型:").grid(row=1, column=0, sticky=tk.W, pady=3)
         self.type_var = tk.StringVar(value=GOAL_CONFIG["goal_types"][0])
-        type_combo = ttk.Combobox(form_frame, textvariable=self.type_var, values=GOAL_CONFIG["goal_types"], width=32)
+        type_combo = ttk.Combobox(form_frame, textvariable=self.type_var, values=GOAL_CONFIG["goal_types"], width=27)
         type_combo.grid(row=1, column=1, pady=3, padx=(8, 0))
         
         ttk.Label(form_frame, text="描述:").grid(row=2, column=0, sticky=tk.W, pady=3)
-        self.description_entry = ttk.Entry(form_frame, width=35)
+        self.description_entry = ttk.Entry(form_frame, width=30)
         self.description_entry.grid(row=2, column=1, pady=3, padx=(8, 0))
         
         ttk.Label(form_frame, text="状态:").grid(row=3, column=0, sticky=tk.W, pady=3)
         self.status_var = tk.StringVar(value="进行中")
-        status_combo = ttk.Combobox(form_frame, textvariable=self.status_var, values=GOAL_CONFIG["status_options"], width=32)
+        status_combo = ttk.Combobox(form_frame, textvariable=self.status_var, values=GOAL_CONFIG["status_options"], width=27)
         status_combo.grid(row=3, column=1, pady=3, padx=(8, 0))
         
         ttk.Label(form_frame, text="优先级:").grid(row=4, column=0, sticky=tk.W, pady=3)
         self.priority_var = tk.StringVar(value="中")
-        priority_combo = ttk.Combobox(form_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], width=32)
+        priority_combo = ttk.Combobox(form_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], width=27)
         priority_combo.grid(row=4, column=1, pady=3, padx=(8, 0))
         
         ttk.Label(form_frame, text="截止日期:").grid(row=5, column=0, sticky=tk.W, pady=3)
-        self.deadline_entry = ttk.Entry(form_frame, width=35)
+        self.deadline_entry = ttk.Entry(form_frame, width=25)
         self.deadline_entry.grid(row=5, column=1, pady=3, padx=(8, 0))
         
         # 按钮
