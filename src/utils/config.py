@@ -12,8 +12,8 @@ from pathlib import Path
 def get_app_path():
     """获取应用程序路径，支持exe打包后的路径"""
     if getattr(sys, 'frozen', False):
-        # 如果是exe打包后的环境
-        return Path(sys._MEIPASS)
+        # 如果是exe打包后的环境，返回可执行文件所在目录
+        return Path(sys.executable).parent
     else:
         # 如果是开发环境
         return Path(__file__).parent.parent.parent
