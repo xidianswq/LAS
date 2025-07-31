@@ -9,7 +9,6 @@ from tkinter import ttk, messagebox
 from datetime import datetime, date
 import sys
 import os
-import re
 
 # 添加项目根目录到路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))

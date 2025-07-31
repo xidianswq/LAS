@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-安装脚本
-用于安装依赖和初始化系统
+LAS 系统安装脚本
+极简版安装程序
 """
 
 import os
@@ -16,11 +16,12 @@ def check_python_version():
     version = sys.version_info
     if version.major < 3 or (version.major == 3 and version.minor < 7):
         print("❌ Python版本过低，需要Python 3.7或更高版本")
+        print(f"当前版本: {version.major}.{version.minor}.{version.micro}")
         return False
     print(f"✅ Python版本: {version.major}.{version.minor}.{version.micro}")
     return True
 
-def install_requirements():
+def install_dependencies():
     """安装依赖包"""
     try:
         print("📦 安装依赖包...")
@@ -28,8 +29,8 @@ def install_requirements():
         # 检查requirements.txt是否存在
         requirements_file = "requirements.txt"
         if not os.path.exists(requirements_file):
-            print("❌ requirements.txt文件不存在")
-            return False
+            print("⚠️ requirements.txt文件不存在，跳过依赖安装")
+            return True
         
         # 安装依赖
         result = subprocess.run([
@@ -40,23 +41,24 @@ def install_requirements():
             print("✅ 依赖包安装成功")
             return True
         else:
-            print(f"❌ 依赖包安装失败: {result.stderr}")
-            return False
+            print(f"⚠️ 依赖包安装失败: {result.stderr}")
+            print("继续安装...")
+            return True
             
     except Exception as e:
-        print(f"❌ 安装依赖包时出错: {e}")
-        return False
+        print(f"⚠️ 安装依赖包时出错: {e}")
+        print("继续安装...")
+        return True
 
 def create_directories():
     """创建必要的目录"""
     try:
-        print("📁 创建目录...")
+        print("📁 创建必要目录...")
         
         directories = [
             "doc",
             "src/gui",
-            "src/utils",
-            "recovered_files"
+            "src/utils"
         ]
         
         for directory in directories:
@@ -75,7 +77,7 @@ def init_database():
         print("🗄️ 初始化数据库...")
         
         # 导入数据库重置模块
-        from reset_database import reset_database, verify_database
+        from reset_database import reset_database
         
         # 重置数据库
         if reset_database():
@@ -89,71 +91,45 @@ def init_database():
         print(f"❌ 初始化数据库时出错: {e}")
         return False
 
-def create_shortcut():
-    """创建快捷方式"""
+def create_launch_script():
+    """创建启动脚本"""
     try:
+        print("🚀 创建启动脚本...")
+        
         system = platform.system()
         
         if system == "Windows":
-            # Windows快捷方式
-            import winshell
-            from win32com.client import Dispatch
+            # Windows批处理文件
+            batch_content = f'''@echo off
+echo 正在启动LAS系统...
+"{sys.executable}" "{os.path.abspath("main.py")}"
+pause
+'''
             
-            desktop = winshell.desktop()
-            shortcut_path = os.path.join(desktop, "LAS.lnk")
+            script_path = "启动LAS.bat"
+            with open(script_path, "w", encoding="utf-8") as f:
+                f.write(batch_content)
             
-            shell = Dispatch('WScript.Shell')
-            shortcut = shell.CreateShortCut(shortcut_path)
-            shortcut.Targetpath = sys.executable
-            shortcut.Arguments = f'"{os.path.abspath("main.py")}"'
-            shortcut.WorkingDirectory = os.path.abspath(".")
-            shortcut.IconLocation = sys.executable
-            shortcut.save()
+            print(f"✅ Windows启动脚本已创建: {script_path}")
             
-            print(f"✅ Windows快捷方式已创建: {shortcut_path}")
-            
-        elif system == "Darwin":  # macOS
-            # macOS应用程序包
-            app_name = "LAS.app"
-            app_path = f"/Applications/{app_name}"
-            
-            # 创建简单的启动脚本
+        else:  # macOS/Linux
+            # Shell脚本
             script_content = f'''#!/bin/bash
 cd "{os.path.abspath(".")}"
 "{sys.executable}" "{os.path.abspath("main.py")}"
 '''
             
-            script_path = "/usr/local/bin/las"
+            script_path = "启动LAS.sh"
             with open(script_path, "w") as f:
                 f.write(script_content)
             
             os.chmod(script_path, 0o755)
-            print(f"✅ macOS启动脚本已创建: {script_path}")
-            
-        else:  # Linux
-            # Linux桌面文件
-            desktop_file = f"""[Desktop Entry]
-Version=1.0
-Type=Application
-Name=LAS
-Comment=人生成就系统
-Exec={sys.executable} {os.path.abspath('main.py')}
-Path={os.path.abspath('.')}
-Icon=utilities-terminal
-Terminal=false
-Categories=Utility;
-"""
-            
-            desktop_path = os.path.expanduser("~/.local/share/applications/las.desktop")
-            with open(desktop_path, "w") as f:
-                f.write(desktop_file)
-            
-            print(f"✅ Linux桌面文件已创建: {desktop_path}")
+            print(f"✅ {system}启动脚本已创建: {script_path}")
         
         return True
         
     except Exception as e:
-        print(f"⚠️ 创建快捷方式失败: {e}")
+        print(f"⚠️ 创建启动脚本失败: {e}")
         return False
 
 def main():
@@ -171,21 +147,21 @@ def main():
         return False
     
     # 安装依赖
-    if not install_requirements():
-        return False
+    install_dependencies()
     
     # 初始化数据库
     if not init_database():
         return False
     
-    # 创建快捷方式
-    create_shortcut()
+    # 创建启动脚本
+    create_launch_script()
     
     print("\n" + "=" * 50)
     print("✅ 安装完成！")
     print("=" * 50)
-    print("现在可以运行以下命令启动系统:")
-    print(f"python {os.path.abspath('main.py')}")
+    print("启动方式:")
+    print(f"1. 直接运行: python {os.path.abspath('main.py')}")
+    print("2. 使用启动脚本: 双击启动脚本文件")
     print("=" * 50)
     
     return True

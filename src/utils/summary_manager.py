@@ -7,10 +7,10 @@
 
 import tkinter as tk
 from tkinter import messagebox
-from datetime import datetime, date
+from datetime import datetime
 import os
-from src.utils.database import execute_query, execute_insert, execute_update
-from src.utils.config import SUMMARY_CONFIG, EXP_REWARD_CONFIG
+from src.utils.database import execute_query, execute_update
+from src.utils.config import EXP_REWARD_CONFIG
 
 
 def read_summary_file(file_path: str) -> str:
@@ -34,14 +34,13 @@ def read_summary_file(file_path: str) -> str:
         return ""
 
 
-def write_summary_to_file(file_path: str, content: str, title: str = "", date: str = ""):
+def write_summary_to_file(file_path: str, content: str, date: str = ""):
     """
     将总结内容写入文件，在开头添加新内容，在结尾添加空行
     
     Args:
         file_path: 文件路径
         content: 总结内容
-        title: 标题（可选）
         date: 日期（可选）
     """
     # 确保doc文件夹存在
@@ -69,16 +68,6 @@ def write_summary_to_file(file_path: str, content: str, title: str = "", date: s
             f.write(new_entry + existing_content)
     except Exception as e:
         print(f"写入文件失败: {e}")
-
-
-def get_current_date_str() -> str:
-    """获取当前日期字符串"""
-    return datetime.now().strftime("%Y-%m-%d")
-
-
-def get_current_time_str() -> str:
-    """获取当前时间字符串"""
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 class SummaryManager:
@@ -137,7 +126,7 @@ class SummaryManager:
             if not os.path.exists(md_file_path):
                 open(md_file_path, 'w', encoding='utf-8')
             # 写入md文件
-            write_summary_to_file(md_file_path, content, "", summary_date)
+            write_summary_to_file(md_file_path, content, summary_date)
             print(f"总结已写入md文件: {md_file_path}")
             
         except Exception as e:
