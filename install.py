@@ -21,6 +21,20 @@ def check_python_version():
     print(f"✅ Python版本: {version.major}.{version.minor}.{version.micro}")
     return True
 
+def check_tkinter():
+    """检查tkinter是否可用"""
+    try:
+        import tkinter
+        print("✅ tkinter模块可用")
+        return True
+    except ImportError:
+        print("❌ tkinter模块不可用")
+        print("请确保Python安装时包含了tkinter模块")
+        print("Windows用户: 重新安装Python时勾选'tcl/tk and IDLE'选项")
+        print("Linux用户: 安装python3-tk包")
+        print("macOS用户: 通常已包含tkinter")
+        return False
+
 def install_dependencies():
     """安装依赖包"""
     try:
@@ -140,6 +154,10 @@ def main():
     
     # 检查Python版本
     if not check_python_version():
+        return False
+    
+    # 检查tkinter
+    if not check_tkinter():
         return False
     
     # 创建目录
