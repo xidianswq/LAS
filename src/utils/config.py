@@ -62,7 +62,7 @@ LEVEL_SYSTEM_CONFIG = {
 EXP_REWARD_CONFIG = {
     "goal_completion": 500,     # 目标完成奖励经验值
     "daily_task_default": 10,   # 每日任务默认奖励经验值
-    "summary_completion": 5     # 总结完成奖励经验值
+    "summary_completion": 0     # 总结完成奖励经验值
 }
 
 # ==================== 目标配置 ====================

@@ -1,17 +1,13 @@
 # 忽略build目录
 build/*
 
-# 忽略spec文件和pyc文件
+# 忽略spec文件和pycache
 *.spec
-*.pyc
-*.pyo
-*.pyd
-*.pyw
-*.pyz
-*.pywz
-*.pyzw
-*.pyzwz
-*.pyzwzw
+src/gui/__pycache__
+src/utils/__pycache__
 
 # 忽略脚本
 *.bat
+
+# 忽略数据
+doc/*
