@@ -58,8 +58,7 @@ class DataManager:
         
         # 查询数据库 - 只显示未完成的目标
         query = """
-        SELECT id, title, description, goal_type, priority, status, 
-               deadline, created_at
+        SELECT id, title, description, goal_type, priority, status, created_at
         FROM goals 
         WHERE goal_type = ? AND status != '已完成'
         ORDER BY priority DESC, created_at DESC
@@ -69,25 +68,6 @@ class DataManager:
             results = execute_query(query, (goal_type,))
             
             for row in results:
-                # 计算完成进度（简化版本，基于状态）
-                if row['status'] == '已完成':
-                    progress_text = "100%"
-                else:
-                    progress_text = "0%"
-                
-                # 格式化截止日期
-                deadline = row['deadline']
-                if deadline:
-                    deadline_date = datetime.strptime(deadline, '%Y-%m-%d').date()
-                    today = date.today()
-                    if deadline_date < today:
-                        deadline_text = f"已逾期 ({deadline})"
-                    else:
-                        days_left = (deadline_date - today).days
-                        deadline_text = f"剩余{days_left}天 ({deadline})"
-                else:
-                    deadline_text = "无截止日期"
-                
                 # 设置状态显示
                 status = row['status'] or '进行中'
                 if status == '已完成':
@@ -114,10 +94,9 @@ class DataManager:
             self.main_system.gui.daily_tasks_tree.delete(item)
             
         try:
-            # 查询今日的未完成每日任务
-            current_date = datetime.now().strftime("%Y-%m-%d")
-            query = "SELECT id, title, description, status, priority, experience_reward FROM daily_tasks WHERE task_date = ? AND status != '已完成' ORDER BY created_at DESC"
-            results = execute_query(query, (current_date,))
+            # 查询所有未完成的每日任务
+            query = "SELECT id, title, description, status, priority, experience_reward FROM daily_tasks WHERE status != '已完成' ORDER BY created_at DESC"
+            results = execute_query(query)
             
             for row in results:
                 # 设置完成状态图标和文本

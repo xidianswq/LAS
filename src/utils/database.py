@@ -187,7 +187,7 @@ class DailyResetManager:
     
     功能说明：
     - 每天0点自动重置每日任务的完成状态
-    - 将昨日已完成的任务重置为"未完成"状态
+    - 将所有已完成的任务重置为"未完成"状态
     - 未完成的任务保持原状态不变
     - 这样可以实现每日计划的循环使用
     """
@@ -235,7 +235,7 @@ class DailyResetManager:
         执行每日重置
         
         重置逻辑：
-        1. 查找昨日已完成的任务
+        1. 查找所有已完成的任务
         2. 将这些任务的状态重置为"未完成"
         3. 未完成的任务保持原状态
         4. 这样用户可以在新的一天重新完成这些任务
@@ -254,22 +254,21 @@ class DailyResetManager:
     def _reset_daily_tasks(self):
         """重置每日任务状态"""
         try:
-            # 将已完成的每日任务状态重置为未完成
-            # 注意：这里只重置已完成的任务，未完成的任务保持原状态
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            # 将所有已完成的每日任务状态重置为未完成
+            # 这样用户可以在新的一天重新完成这些任务
             query = """
                 UPDATE daily_tasks 
                 SET status = '未完成', updated_at = ?
-                WHERE status = '已完成' AND task_date < ?
+                WHERE status = '已完成'
             """
             
-            current_date = datetime.now().strftime("%Y-%m-%d")
-            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            
-            success = execute_update(query, (current_time, current_date))
+            success = execute_update(query, (current_time,))
             
             if success:
                 print("✅ 每日任务状态重置完成")
-                print("📝 说明：已将昨日已完成的任务重置为未完成状态")
+                print("📝 说明：已将所有已完成的任务重置为未完成状态")
                 # 通知数据变更
                 self.main_system.notify_data_changed("daily_reset")
             else:

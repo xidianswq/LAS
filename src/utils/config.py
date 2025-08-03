@@ -120,7 +120,6 @@ DATABASE_TABLES = {
             description TEXT,
             status TEXT DEFAULT '进行中',
             priority TEXT DEFAULT '中',
-            deadline TEXT,
             created_at TEXT,
             updated_at TEXT
         )
@@ -133,7 +132,6 @@ DATABASE_TABLES = {
             priority TEXT DEFAULT '中',
             status TEXT DEFAULT '未完成',
             experience_reward INTEGER DEFAULT 10,
-            task_date TEXT,
             created_at TEXT,
             updated_at TEXT
         )
@@ -148,6 +146,13 @@ DEFAULT_DATA = {
         "experience": 0,
         "level": 1
     }
+}
+
+# ==================== 倒计时配置 ====================
+LIFE_COUNTDOWN_CONFIG = {
+    "birthday": "2003-04-11",  # 生日，格式：YYYY-MM-DD
+    "target_age": 60,           # 目标年龄
+    "update_interval": 60000    # 更新间隔（毫秒）
 }
 
 # ==================== 消息配置 ====================

@@ -165,9 +165,6 @@ class DailyTasksWindow:
             return
         
         try:
-            # 插入任务
-            current_date = datetime.now().strftime("%Y-%m-%d")
-            
             # 根据优先级计算经验值奖励
             priority_levels = DAILY_TASK_CONFIG["priority_levels"]
             experience_rewards = DAILY_TASK_CONFIG["experience_reward"]
@@ -179,12 +176,12 @@ class DailyTasksWindow:
             
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             query = """
-                INSERT INTO daily_tasks (title, description, status, priority, task_date, 
+                INSERT INTO daily_tasks (title, description, status, priority, 
                                        experience_reward, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """
             task_id = execute_insert(query, (
-                title, description, "未完成", priority, current_date,
+                title, description, "未完成", priority,
                 exp_reward, current_time, current_time
             ))
             
@@ -221,12 +218,11 @@ class DailyTasksWindow:
             for item in self.tasks_tree.get_children():
                 self.tasks_tree.delete(item)
             
-            # 查询今日任务
-            current_date = datetime.now().strftime("%Y-%m-%d")
-            query = "SELECT * FROM daily_tasks WHERE task_date = ? ORDER BY created_at DESC"
-            tasks = execute_query(query, (current_date,))
+            # 查询所有任务
+            query = "SELECT * FROM daily_tasks ORDER BY created_at DESC"
+            tasks = execute_query(query)
             
-            print(f"📊 查询到 {len(tasks)} 个今日任务")
+            print(f"📊 查询到 {len(tasks)} 个任务")
             
             # 添加到树形视图
             for task in tasks:

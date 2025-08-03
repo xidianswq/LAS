@@ -94,21 +94,14 @@ class GoalsWindow:
         desc_entry = ttk.Entry(desc_frame, textvariable=self.description_var, width=30)
         desc_entry.pack(side=tk.LEFT, padx=(5, 0))
         
-        # 优先级和截止日期在同一行
-        priority_deadline_frame = ttk.Frame(left_fields)
-        priority_deadline_frame.pack(fill=tk.X, pady=(0, 5))
-        
         # 优先级
-        ttk.Label(priority_deadline_frame, text="优先级:").pack(side=tk.LEFT)
-        self.priority_var = tk.StringVar(value=GOAL_CONFIG["priority_levels"][1])  # 默认中等
-        priority_combo = ttk.Combobox(priority_deadline_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], state="readonly", width=2)
-        priority_combo.pack(side=tk.LEFT, padx=(5, 10))
+        priority_frame = ttk.Frame(left_fields)
+        priority_frame.pack(fill=tk.X, pady=(0, 5))
         
-        # 截止日期
-        ttk.Label(priority_deadline_frame, text="截止日期:").pack(side=tk.LEFT)
-        self.deadline_var = tk.StringVar()
-        deadline_entry = ttk.Entry(priority_deadline_frame, textvariable=self.deadline_var, width=14)
-        deadline_entry.pack(side=tk.LEFT, padx=(5, 0))
+        ttk.Label(priority_frame, text="优先级:").pack(side=tk.LEFT)
+        self.priority_var = tk.StringVar(value=GOAL_CONFIG["priority_levels"][1])  # 默认中等
+        priority_combo = ttk.Combobox(priority_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], state="readonly", width=10)
+        priority_combo.pack(side=tk.LEFT, padx=(5, 0))
         
         # 右侧：按钮
         right_buttons = ttk.Frame(form_frame)
@@ -128,7 +121,7 @@ class GoalsWindow:
         list_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
         # 创建树形视图
-        columns = ("ID", "标题", "类型", "描述", "状态", "优先级", "截止日期", "创建时间")
+        columns = ("ID", "标题", "类型", "描述", "状态", "优先级", "创建时间")
         self.goals_tree = ttk.Treeview(list_frame, columns=columns, show="headings", height=12)
         
         # 设置列标题和宽度
@@ -139,7 +132,6 @@ class GoalsWindow:
             "描述": 150,
             "状态": 70,
             "优先级": 50,
-            "截止日期": 80,
             "创建时间": 100
         }
         
@@ -176,7 +168,6 @@ class GoalsWindow:
         goal_type = self.type_var.get().strip()
         description = self.description_var.get().strip()
         priority = self.priority_var.get().strip()
-        deadline = self.deadline_var.get().strip()
         
         if not title:
             messagebox.showwarning("警告", "请输入目标标题")
@@ -190,11 +181,11 @@ class GoalsWindow:
             # 插入目标
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             query = """
-                INSERT INTO goals (title, goal_type, description, status, priority, deadline, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO goals (title, goal_type, description, status, priority, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """
             goal_id = execute_insert(query, (
-                title, goal_type, description, "进行中", priority, deadline,
+                title, goal_type, description, "进行中", priority,
                 current_time, current_time
             ))
             
@@ -223,7 +214,6 @@ class GoalsWindow:
         self.type_var.set(GOAL_CONFIG["goal_types"][0])
         self.description_var.set("")
         self.priority_var.set(GOAL_CONFIG["priority_levels"][1])
-        self.deadline_var.set("")
         
     def refresh_goals(self):
         """刷新目标列表"""
@@ -248,7 +238,6 @@ class GoalsWindow:
                     goal['description'],
                     goal['status'],
                     goal['priority'],
-                    goal['deadline'],
                     goal['created_at']
                 ))
             
@@ -454,10 +443,6 @@ class EditGoalWindow:
         priority_combo = ttk.Combobox(form_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], width=27)
         priority_combo.grid(row=4, column=1, pady=3, padx=(8, 0))
         
-        ttk.Label(form_frame, text="截止日期:").grid(row=5, column=0, sticky=tk.W, pady=3)
-        self.deadline_entry = ttk.Entry(form_frame, width=25)
-        self.deadline_entry.grid(row=5, column=1, pady=3, padx=(8, 0))
-        
         # 按钮
         button_frame = ttk.Frame(self.window)
         button_frame.pack(fill=tk.X, padx=15, pady=(0, 10))
@@ -478,7 +463,6 @@ class EditGoalWindow:
                 self.description_entry.insert(0, goal['description'] or "")
                 self.status_var.set(goal['status'] or "进行中")
                 self.priority_var.set(goal['priority'] or "中")
-                self.deadline_entry.insert(0, goal['deadline'] or "")
             else:
                 messagebox.showerror("错误", "未找到目标信息")
                 self.window.destroy()
@@ -493,7 +477,6 @@ class EditGoalWindow:
         description = self.description_entry.get().strip()
         status = self.status_var.get()
         priority = self.priority_var.get()
-        deadline = self.deadline_entry.get().strip()
         
         if not title:
             messagebox.showwarning("警告", "请输入目标标题")
@@ -504,11 +487,11 @@ class EditGoalWindow:
             query = """
                 UPDATE goals 
                 SET title = ?, goal_type = ?, description = ?, status = ?, 
-                    priority = ?, deadline = ?, updated_at = ?
+                    priority = ?, updated_at = ?
                 WHERE id = ?
             """
             execute_update(query, (
-                title, goal_type, description, status, priority, deadline,
+                title, goal_type, description, status, priority,
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.goal_id
             ))
             

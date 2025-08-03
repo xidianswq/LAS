@@ -60,8 +60,11 @@ class SystemManager:
     def init_daily_reset(self):
         """初始化每日重置管理器"""
         try:
-            init_daily_reset_manager(self.main_system)
-            print("✅ 每日重置管理器初始化成功")
+            self.main_system.daily_reset_manager = init_daily_reset_manager(self.main_system)
+            if self.main_system.daily_reset_manager:
+                print("✅ 每日重置管理器初始化成功")
+            else:
+                print("❌ 每日重置管理器初始化失败")
         except Exception as e:
             print(f"❌ 每日重置管理器初始化失败: {e}")
     
@@ -69,6 +72,7 @@ class SystemManager:
         """加载数据"""
         self.main_system.gui.update_time_display()
         self.main_system.gui.load_user_level()
+        self.main_system.gui.update_countdown_display()
         self.main_system.data_manager.refresh_goals()
         self.main_system.data_manager.refresh_daily_tasks()
         

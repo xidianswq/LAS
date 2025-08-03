@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from src.utils.database import execute_query, execute_update
 from src.utils.data_manager import format_level_info, format_level_only, calculate_level
 
-from src.utils.config import UI_CONFIG
+from src.utils.config import UI_CONFIG, LIFE_COUNTDOWN_CONFIG
 
 
 class MainWindowGUI:
@@ -30,6 +30,7 @@ class MainWindowGUI:
         self.time_label = None
         self.system_time_label = None
         self.level_label = None
+        self.countdown_label = None
         self.goals_tree = None
         self.daily_tasks_tree = None
         self.summary_content_text = None
@@ -83,6 +84,13 @@ class MainWindowGUI:
         
         self.level_label = ttk.Label(level_frame, text="等级: 1")
         self.level_label.pack()
+        
+        # 倒计时
+        countdown_frame = ttk.LabelFrame(parent, text="倒计时", padding=UI_CONFIG["padding"])
+        countdown_frame.pack(fill=tk.X, pady=(0, UI_CONFIG["padding"]))
+        
+        self.countdown_label = ttk.Label(countdown_frame, text="", anchor="center", justify="center")
+        self.countdown_label.pack(expand=True, fill=tk.BOTH)
     
     def create_main_content(self, parent):
         """创建主内容区"""
@@ -265,7 +273,7 @@ class MainWindowGUI:
             elif days_diff == 1:
                 system_time_text = "已运行1天"
             else:
-                system_time_text = f"已运行{days_diff}天"
+                system_time_text = f"已运行 {days_diff} 天"
                 
             self.system_time_label.config(text=system_time_text)
         except Exception as e:
@@ -289,15 +297,62 @@ class MainWindowGUI:
                 level_info = format_level_only(current_level)
                 
                 # 更新等级显示
-                self.level_label.config(text=level_info)
+                self.level_label.config(text="Lv."+level_info)
 
             else:
                 # 如果没有找到用户信息，使用默认值
                 level_info = format_level_only(1)
-                self.level_label.config(text=level_info)
+                self.level_label.config(text="Lv."+level_info)
             
         except Exception as e:
             print(f"加载用户等级信息失败: {e}")
             # 使用默认值
             level_info = format_level_only(1)
-            self.level_label.config(text=level_info) 
+            self.level_label.config(text="Lv."+level_info)
+    
+    def calculate_life_countdown(self):
+        """计算倒计时"""
+        try:
+            # 从配置文件获取生日和目标年龄
+            birthday_str = LIFE_COUNTDOWN_CONFIG["birthday"]
+            target_age = LIFE_COUNTDOWN_CONFIG["target_age"]
+            birthday = datetime.strptime(birthday_str, "%Y-%m-%d").date()
+            
+            # 计算目标日期
+            target_date = birthday.replace(year=birthday.year + target_age)
+            
+            # 当前日期和时间
+            current_datetime = datetime.now()
+            current_date = current_datetime.date()
+            
+            # 计算剩余天数
+            remaining_days = (target_date - current_date).days
+            
+            if remaining_days <= 0:
+                return "已超过60岁"
+            
+            # 计算到今天晚上24:00的剩余分钟数（简化计算）
+            current_hour = current_datetime.hour
+            current_minute = current_datetime.minute
+            minutes_to_midnight = (24 - current_hour) * 60 - current_minute
+            
+            remaining_hours = int(remaining_days * 24)
+            
+            # 计算到今天晚上24:00的剩余分钟数
+            today_midnight = datetime.combine(current_date + date.resolution, datetime.min.time())
+            minutes_to_midnight = int((today_midnight - current_datetime).total_seconds() / 60)
+            
+            return f"-----Life-----\n{remaining_days} Day\n{remaining_hours} Hour\n----Today----\n{minutes_to_midnight} Min"
+            
+        except Exception as e:
+            print(f"计算倒计时失败: {e}")
+            return "计算失败"
+    
+    def update_countdown_display(self):
+        """更新倒计时显示"""
+        countdown_text = self.calculate_life_countdown()
+        self.countdown_label.config(text=countdown_text)
+        
+        # 使用配置文件中的更新间隔
+        update_interval = LIFE_COUNTDOWN_CONFIG["update_interval"]
+        self.root.after(update_interval, self.update_countdown_display) 
