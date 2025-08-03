@@ -100,7 +100,7 @@ class GoalsWindow:
         
         ttk.Label(priority_frame, text="优先级:").pack(side=tk.LEFT)
         self.priority_var = tk.StringVar(value=GOAL_CONFIG["priority_levels"][1])  # 默认中等
-        priority_combo = ttk.Combobox(priority_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], state="readonly", width=10)
+        priority_combo = ttk.Combobox(priority_frame, textvariable=self.priority_var, values=GOAL_CONFIG["priority_levels"], state="readonly", width=26)
         priority_combo.pack(side=tk.LEFT, padx=(5, 0))
         
         # 右侧：按钮

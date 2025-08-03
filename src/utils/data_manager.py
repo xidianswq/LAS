@@ -292,16 +292,14 @@ class DataManager:
     def get_daily_task_statistics(self):
         """获取每日任务统计信息"""
         try:
-            current_date = datetime.now().strftime("%Y-%m-%d")
             query = """
                 SELECT 
                     COUNT(*) as total_tasks,
                     SUM(CASE WHEN status = '已完成' THEN 1 ELSE 0 END) as completed_tasks,
                     SUM(CASE WHEN status = '未完成' THEN 1 ELSE 0 END) as in_progress_tasks
                 FROM daily_tasks 
-                WHERE task_date = ?
             """
-            results = execute_query(query, (current_date,))
+            results = execute_query(query)
             
             if results:
                 row = results[0]
@@ -311,9 +309,9 @@ class DataManager:
                 
                 completion_rate = (completed / total) * 100 if total > 0 else 0
                 
-                return f"今日任务: 总计{total}个, 已完成{completed}个, 未完成{in_progress}个, 完成率{completion_rate:.1f}%"
+                return f"任务统计: 总计{total}个, 已完成{completed}个, 未完成{in_progress}个, 完成率{completion_rate:.1f}%"
             else:
-                return "今日暂无任务数据"
+                return "暂无任务数据"
                 
         except Exception as e:
             print(f"获取每日任务统计失败: {e}")
